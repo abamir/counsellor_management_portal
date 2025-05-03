@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Enquiries</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .navbar {
+            background-color: #0d6efd;
+        }
+
+        .navbar-brand, .nav-link, .navbar-text {
+            color: #fff !important;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .form-select, .btn {
+            border-radius: 8px;
+        }
+
+        .table th {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .table td, .table th {
+            vertical-align: middle;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-row > div {
+            flex: 1 1 200px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard"><i class="bi bi-house-fill me-1"></i> Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Enquiry"><i class="bi bi-plus-circle me-1"></i> Add Enquiry</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/viewEnquiry"><i class="bi bi-card-list me-1"></i> View Enquiries</a>
+                </li>
+            </ul>
+        </div>
+        <form th:action="@{/logout}">
+            <button class="btn btn-outline-light" type="submit"><i class="bi bi-box-arrow-right me-1"></i> Logout
+            </button>
+        </form>
+    </div>
+</nav>
+
+<!-- Content -->
+<div class="container my-5">
+    <div class="card p-4">
+        <div class="card-header mb-3">
+            <h4 class="text-primary"><i class="bi bi-search me-1"></i> Filter Student Enquiries</h4>
+        </div>
+        <div id="messageSection">
+            <!-- <div class="alert alert-success d-none" role="alert" id="successMessage"
+                  th:if="${successMessage}"
+             th:text="${successMessage}"></div>
+
+             </div>
+             <div class="alert alert-danger d-none" role="alert" id="errorMessage"
+                  th:if="${errorMessage}"
+             th:text="${errorMessage}">-->
+
+            <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+
+            <!-- ❌ Error Message -->
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+        </div>
+        <!-- Filter Form -->
+        <form th:object="${filterDto}" th:action="@{/filterEnquiry}" method="post" class="mb-4">
+            <div class="filter-row">
+
+                <div>
+                    <label for="classMode" class="form-label">Class Mode</label>
+                    <select class="form-select" id="classMode" th:field="*{classMode}">
+                        <option value="">Choose...</option>
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="courseName" class="form-label">Course</label>
+                    <select class="form-select" id="courseName" th:field="*{courseName}">
+                        <option value="">Choose...</option>
+                        <option value="Java">Java</option>
+                        <option value="Python">Python</option>
+                        <option value="DevOps">DevOps</option>
+                        <option value="Web Development">Web Development</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" th:field="*{enqStatus}">
+                        <option value="">Choose...</option>
+                        <option value="Open">Open</option>
+                        <option value="Enrolled">Enrolled</option>
+                        <option value="Lost">Lost</option>
+                    </select>
+                </div>
+
+                <div class="align-self-end">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel-fill me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Enquiry Table -->
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(enquiryList)}">
+                <div class="alert alert-warning text-center">No enquiries available.</div>
+            </div>
+            <div th:unless="${#lists.isEmpty(enquiryList)}">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered mb-0">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student Name</th>
+                            <th>Phone</th>
+                            <th>Class Mode</th>
+                            <th>Course</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="enquiry : ${enquiryList}">
+                            <td th:text="${enquiry.enquiryId}"></td>
+                            <td th:text="${enquiry.name}"></td>
+                            <td th:text="${enquiry.phone}"></td>
+                            <td th:text="${enquiry.classMode}"></td>
+                            <td th:text="${enquiry.courseName}"></td>
+                            <td th:text="${enquiry.enqStatus}"></td>
+                            <td>
+                                <a th:href="@{/editEnquiry(enqId=${enquiry.enquiryId})}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

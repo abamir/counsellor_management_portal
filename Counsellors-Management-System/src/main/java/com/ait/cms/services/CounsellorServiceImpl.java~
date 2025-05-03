@@ -1,0 +1,34 @@
+package com.ait.cms.services;
+
+import com.ait.cms.dto.CounsellorDto;
+import com.ait.cms.entities.Counsellor;
+import com.ait.cms.repositories.CounsellorRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+
+public class CounsellorServiceImpl implements CounsellorService {
+
+
+    @Autowired
+    CounsellorRepo counsellorRepo;
+
+    @Override
+    public CounsellorDto login(String email, String password) {
+
+        Optional<Counsellor> conselloerExist = counsellorRepo.findByEmailAndPassword(email, password);
+
+
+        return null;
+    }
+
+    @Override
+    public boolean isEmailUnique(String email) {
+        return false;
+    }
+
+    @Override
+    public boolean register(CounsellorDto counsellorDto) {
+        return false;
+    }
+}

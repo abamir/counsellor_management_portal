@@ -1,0 +1,14 @@
+package com.ait.cms.dto;
+
+import lombok.Data;
+
+@Data
+public class RegisterDto {
+
+    private Integer counsellorId;
+    private String name;
+    private String email;
+    private String phone;
+    private String password;
+
+}
